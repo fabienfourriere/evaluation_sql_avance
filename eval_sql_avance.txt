@@ -1,0 +1,93 @@
+Vues
+
+CREATE VIEW v_catalogue
+AS
+SELECT pro_id, pro_ref, pro_name, cat_id, cat_name FROM products
+JOIN categories ON products.pro_cat_id = categories.cat_id
+
+Procédures stockées
+
+DELIMITER |
+
+CREATE PROCEDURE facture(IN p_ord_id int(10))
+
+BEGIN
+SELECT ord_id, ord_order_date, ord_payment_date, ord_ship_date, ode_unit_price, ode_quantity, ode_discount, ((ode_unit_price * ode_quantity) - ode_discount) AS 'Total', cus_firstname, cus_lastname FROM orders
+JOIN orders_details ON orders.ord_id = orders_details.ode_ord_id
+JOIN customers ON orders.ord_cus_id = customers.cus_id
+WHERE ord_id = p_ord_id;
+END |
+
+DELIMITER ;
+
+Triggers
+
+CREATE TABLE commander_articles
+(
+    codart INT NOT NULL PRIMARY KEY,
+    qte INT,
+    date_ DATE
+);
+
+CREATE TRIGGER after_products_update
+AFTER UPDATE ON products
+FOR EACH ROW
+ BEGIN
+ INSERT INTO commander_articles (codart, qte, date_)
+ SELECT pro_id, (pro_stock_alert - pro_stock), CURRENT_DATE() FROM products
+ WHERE pro_stock < pro_stock_alert;
+END//
+ (Délimiteur : //)
+
+UPDATE products
+SET pro_stock = 6
+WHERE pro_id = 8
+
+UPDATE products
+SET pro_stock = 4
+WHERE pro_id = 8
+
+UPDATE products
+SET pro_stock = 3
+WHERE pro_id = 8
+ 
+
+Transactions
+
+1.
+INSERT INTO posts (pos_id, pos_libelle) VALUES
+(36, 'Employé(e) à la retraite');
+
+2. Changer le poste d'Amity HANAH en 'Employé à la retraite' (+ emp_superior_id = NULL)
+Selectionner les pepinieristes du magasin d'Arras
+Augmenter le salaire de 5% pour l'employé 10 HILLARY Dorian entré le 2002-03-10 (20450.00 => 21472.50)
+Changer l'id du supérieur des employés suivants par le 10 :
+
+emp_id emp_lastname emp_firstname emp_enter_date
+20     YETTA        Ahmed         2008-03-13
+44     ISAAC        Christine     2016-01-09
+57     MALIK        Keiko         2003-03-21
+103    PALMER       Mia           2015-10-05
+
+3.
+Requete pour sélectionner les pepinieristes d'Arras :
+SELECT emp_id, emp_lastname, emp_firstname, emp_enter_date FROM employees
+WHERE emp_pos_id = 14 AND emp_sho_id = 2
+
+4.
+START TRANSACTION;
+SELECT emp_pos_id FROM employees WHERE emp_id = 59;
+UPDATE employees SET emp_pos_id = 36 WHERE emp_id = 59;
+SELECT emp_superior_id FROM employees WHERE emp_id = 59;
+UPDATE employees SET emp_superior_id = NULL WHERE emp_id = 59;
+SELECT emp_salary FROM employees WHERE emp_id = 10;
+UPDATE employees SET emp_salary = 21472.50 WHERE emp_id = 10;
+SELECT emp_superior_id FROM employees WHERE emp_id = 20;
+UPDATE employees SET emp_superior_id = 10 WHERE emp_id = 20;
+SELECT emp_superior_id FROM employees WHERE emp_id = 44;
+UPDATE employees SET emp_superior_id = 10 WHERE emp_id = 44;
+SELECT emp_superior_id FROM employees WHERE emp_id = 57;
+UPDATE employees SET emp_superior_id = 10 WHERE emp_id = 57;
+SELECT emp_superior_id FROM employees WHERE emp_id = 103;
+UPDATE employees SET emp_superior_id = 10 WHERE emp_id = 103;
+COMMIT;
