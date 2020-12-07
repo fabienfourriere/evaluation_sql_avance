@@ -1,0 +1,16 @@
+START TRANSACTION;
+SELECT emp_pos_id FROM employees WHERE emp_id = 59;
+UPDATE employees SET emp_pos_id = 36 WHERE emp_id = 59;
+SELECT emp_superior_id FROM employees WHERE emp_id = 59;
+UPDATE employees SET emp_superior_id = NULL WHERE emp_id = 59;
+SELECT emp_salary FROM employees WHERE emp_id = 10;
+UPDATE employees SET emp_salary = 21472.50 WHERE emp_id = 10;
+SELECT emp_superior_id FROM employees WHERE emp_id = 20;
+UPDATE employees SET emp_superior_id = 10 WHERE emp_id = 20;
+SELECT emp_superior_id FROM employees WHERE emp_id = 44;
+UPDATE employees SET emp_superior_id = 10 WHERE emp_id = 44;
+SELECT emp_superior_id FROM employees WHERE emp_id = 57;
+UPDATE employees SET emp_superior_id = 10 WHERE emp_id = 57;
+SELECT emp_superior_id FROM employees WHERE emp_id = 103;
+UPDATE employees SET emp_superior_id = 10 WHERE emp_id = 103;
+COMMIT;
